@@ -5,7 +5,10 @@ document.addEventListener("DOMContentLoaded", () => {
     let centerOffsetYScale = 0.5;
 
     let grid_zoom = 20;
+    let grid_zoom_last = 20;
     let scale = 1;
+    let scale_array = [1,2,5];
+    let scale_idx = 0;
     let cell_length = 0;
 
     // Draws the Grid and the graph
@@ -52,22 +55,26 @@ document.addEventListener("DOMContentLoaded", () => {
         for(let i = 1; i <= Math.floor((canvas.width - centerX)/(cell_length*scale)); i++){
             let x = scale*cell_length*i;
             drawLine(centerX + x, 0, centerX + x, canvas.height, 1, "gray");
-            ctx.fillText(scale*i.toString(), centerX + x, centerY+20);
+            let idx = Math.round(100*scale*i)/100;
+            ctx.fillText(idx*i.toString(), centerX + x, centerY+20);
         }
         for(let i = 1; i <= Math.floor(centerX/(cell_length*scale)); i++){
             let x = scale*cell_length*i;
             drawLine(centerX - x, 0, centerX - x, canvas.height, 1, "gray");
-            ctx.fillText(scale*-i.toString(), centerX - x, centerY+20);
+            let idx = Math.round(100*scale*i)/100;
+            ctx.fillText(-idx.toString(), centerX - x, centerY+20);
         }
         for(let i = 1; i <= Math.floor((canvas.height - centerY)/(cell_length*scale)); i++){
             let y = scale*cell_length*i;
             drawLine(0, centerY + y, canvas.width, centerY + y, 1, "gray");
-            ctx.fillText(scale*-i.toString(), centerX+10, centerY+y-3);
+            let idx = Math.round(100*scale*i)/100;
+            ctx.fillText(-idx.toString(), centerX+10, centerY+y-3);
         }
         for(let i = 1; i <= Math.floor(centerY/(cell_length*scale)); i++){
             let y = scale*cell_length*i;
             drawLine(0, centerY - y, canvas.width, centerY - y, 1, "gray");
-            ctx.fillText(scale*i.toString(), centerX+10, centerY-y-3);
+            let idx = Math.round(100*scale*i)/100;
+            ctx.fillText(idx.toString(), centerX+10, centerY-y-3);
         }
 
         // Graph function using splines
@@ -110,12 +117,38 @@ document.addEventListener("DOMContentLoaded", () => {
     canvas.addEventListener("wheel", (event) => {
         grid_zoom += event.deltaY/100;
         
-        if(grid_zoom >= 25 && event.deltaY > 0){
+
+        if(canvas.width/(cell_length*scale) >= 24 && event.deltaY > 0){
+            if((scale_idx + 1) % 3 == 0){
+                scale_array = scale_array.map(num => num*10);
+            }
+            scale = scale_array[(scale_idx + 1) % 3];
+            scale_idx = (scale_idx + 1) % 3
+        }
+        if(canvas.width/(cell_length*scale) <= 24 && event.deltaY < 0){
+            scale_idx = (scale_idx - 1) % 3;
+            if(scale_idx == -1){
+                scale_array = scale_array.map(num => num/10);
+                scale_idx = 2;
+            }
+            scale = scale_array[(scale_idx) % 3];
+        }
+        console.log(scale_idx);
+        /* if(grid_zoom >= grid_zoom_last + 5 && event.deltaY > 0) {
+            if((scale_idx + 1) % 3 == 0){
+                scale_array = scale_array.map(num => num*10);
+            }
+            scale = scale_array[(scale_idx + 1) % 3];
+            scale_idx++;
+            grid_zoom_last = grid_zoom_last + 5;
+        } */
+
+        /* if(grid_zoom >= 25 && event.deltaY > 0){
             scale = 2;
         }
         if(grid_zoom <= 25 && event.deltaY < 0){
             scale = 1;
-        }
+        } */
 
         if(grid_zoom == 0 && event.deltaY < 0){
             grid_zoom = -2;
@@ -124,7 +157,8 @@ document.addEventListener("DOMContentLoaded", () => {
             grid_zoom = 2;
         }
 
-        console.log(grid_zoom);
+        //console.log(grid_zoom);
+        //console.log(canvas.width/(cell_length*scale));
         drawGrid();
     });
 
