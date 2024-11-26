@@ -8,6 +8,7 @@ body {
     font-family: sans-serif;
     font-size: 1.5em;
     color: whitesmoke;
+    overflow: hidden;
 }
 
 mark {
@@ -64,8 +65,14 @@ a:hover, a:active {
             display: inline-block;
         }
 
-
-.myCanvas{
-    display: block;
+.container{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
     background-color: white;
-}
+    }
+    .inputCanvas{
+        grid-column: 1/2;
+    }
+    .myCanvas{
+        grid-column: 2/6;
+    }

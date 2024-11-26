@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     const canvas = document.getElementById("myCanvas");
     const ctx = canvas.getContext("2d");
+    
     let centerOffsetXScale = 0.5;
     let centerOffsetYScale = 0.5;
 
@@ -9,28 +10,33 @@ document.addEventListener("DOMContentLoaded", () => {
     let scale_array = [1,2,5];
     let scale_idx = 0;
     let cell_length = 0;
+    let cell_length_prev = 0;
+
+    const inputCanvas = document.getElementById("inputCanvas");
+    const inputCtx = inputCanvas.getContext("2d");
+
+    // Function used for drawing lines
+    function drawLine(ctx, xa, ya, xb, yb, thickness = 2, color = "black"){
+        ctx.strokeStyle = color; 
+        ctx.beginPath();
+        ctx.lineWidth = thickness;
+        ctx.moveTo(xa, ya);
+        ctx.lineTo(xb, yb);
+        ctx.stroke();
+    }
 
     // Draws the Grid and the graph
     function drawGrid(){
-        // Function used for drawing lines
-        function drawLine(xa, ya, xb, yb, thickness = 2, color = "black"){
-            ctx.strokeStyle = color; 
-            ctx.beginPath();
-            ctx.lineWidth = thickness;
-            ctx.moveTo(xa, ya);
-            ctx.lineTo(xb, yb);
-            ctx.stroke();
-        }
-
         function f(x){
             return Math.pow(x, 3) + 1/50*Math.pow(x, 2) - 5*x + 4;
         }
 
         // Get window size
-        ctx.canvas.width = window.innerWidth;
+        ctx.canvas.width = (5/6)*window.innerWidth;
         ctx.canvas.height = window.innerHeight;
         
         // Determine Cell Size
+        cell_length_prev = cell_length;
         cell_length = (grid_zoom > 0) ? canvas.width/grid_zoom : canvas.width*Math.abs(grid_zoom);
 
         // The center
@@ -38,9 +44,8 @@ document.addEventListener("DOMContentLoaded", () => {
         let centerY = window.innerHeight*centerOffsetYScale;
         
         // Draw x-axis and y-axis lines respectively
-        drawLine(0, centerY, canvas.width, centerY, 2, "black");
-        drawLine(centerX, 0, centerX, canvas.height, 2, "black");
-
+        drawLine(ctx, 0, centerY, canvas.width, centerY, 2, "black");
+        drawLine(ctx, centerX, 0, centerX, canvas.height, 2, "black");
 
         // Draw the grid lines and unit numbers
         let m = 0;
@@ -51,25 +56,25 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         for(let i = 1; i <= Math.floor((canvas.width-centerX)/(cell_length*scale)); i++){
             let x = scale*cell_length*i;
-            drawLine(centerX+x, 0, centerX+x, canvas.height, 1, "gray");
+            drawLine(ctx, centerX+x, 0, centerX+x, canvas.height, 1, "gray");
             let idx = get_idx(i);
             ctx.fillText(idx.toString(), centerX+x, centerY+20);
         }
         for(let i = 1; i <= Math.floor(centerX/(cell_length*scale)); i++){
             let x = scale*cell_length*i;
-            drawLine(centerX-x, 0, centerX-x, canvas.height, 1, "gray");
+            drawLine(ctx, centerX-x, 0, centerX-x, canvas.height, 1, "gray");
             let idx = get_idx(i);
             ctx.fillText("-"+idx.toString(), centerX-x, centerY+20);
         }
         for(let i = 1; i <= Math.floor((canvas.height-centerY)/(cell_length*scale)); i++){
             let y = scale*cell_length*i;
-            drawLine(0, centerY + y, canvas.width, centerY+y, 1, "gray");
+            drawLine(ctx, 0, centerY + y, canvas.width, centerY+y, 1, "gray");
             let idx = get_idx(i);
             ctx.fillText("-"+idx.toString(), centerX+10, centerY+y-3);
         }
         for(let i = 1; i <= Math.floor(centerY/(cell_length*scale)); i++){
             let y = scale*cell_length*i;
-            drawLine(0, centerY-y, canvas.width, centerY - y, 1, "gray");
+            drawLine(ctx, 0, centerY-y, canvas.width, centerY - y, 1, "gray");
             let idx = get_idx(i);
             ctx.fillText(idx.toString(), centerX+10, centerY-y-3);
         }
@@ -83,13 +88,21 @@ document.addEventListener("DOMContentLoaded", () => {
             let ya = -cell_length*f((i-1)/step)+centerY;
             let xb = cell_length*i/step+centerX;
             let yb = -cell_length*f(i/step)+centerY;
-            drawLine(xa, ya, xb, yb, 2, "red"); 
+            drawLine(ctx, xa, ya, xb, yb, 2, "red"); 
         }
+    }
+
+    function drawInputCanvas(){
+        // Draw line separating inputCanvas and gridCanvas
+        inputCtx.canvas.height = window.innerHeight;
+        inputCtx.canvas.width = window.innerWidth/6;
+        drawLine(inputCtx, inputCanvas.width-1, 0, inputCanvas.width-1, inputCanvas.height-1, 4, "black");
     }
 
     // Detect if window has been resized
     window.addEventListener("resize", () => {
         drawGrid();
+        drawInputCanvas();
     });
     
     // Detect if left click is down and mouse is moving, used for shifting graph
@@ -112,7 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
             drawGrid();
         }
     });
-    canvas.addEventListener("mouseleave", (event) => {
+    canvas.addEventListener("mouseleave", () => {
         held = false;
     });
 
@@ -144,9 +157,21 @@ document.addEventListener("DOMContentLoaded", () => {
         if(grid_zoom == 0 && event.deltaY > 0){
             grid_zoom = 2;
         }
-
+        let cell_length_delta = ((grid_zoom > 0) ? canvas.width/grid_zoom : canvas.width*Math.abs(grid_zoom))/cell_length;
+        let rect = canvas.getBoundingClientRect();
+        let angle = Math.atan2((canvas.height/2)-event.clientY+rect.top, (canvas.width/2)-event.clientX+rect.left)
+        let r = Math.sqrt(Math.pow((canvas.width/2)-event.clientX+rect.left, 2) + Math.pow((canvas.height/2)-event.clientY+rect.top, 2));
+        console.log("---------------------------");
+        console.log("cell_length: ", cell_length);
+        console.log("angle: ", angle);
+        console.log("cell_length_delta: ", cell_length_delta);
+        console.log("r: ", r);
+        centerOffsetXScale += (r*Math.cos(angle))/(canvas.width*cell_length_delta);
+        centerOffsetYScale += (r*Math.sin(angle))/(canvas.height*cell_length_delta);
         drawGrid();
+        drawInputCanvas();
     });
 
     drawGrid();
+    drawInputCanvas();
 });
