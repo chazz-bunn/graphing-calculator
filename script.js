@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
     const canvas = document.getElementById("myCanvas");
     const ctx = canvas.getContext("2d");
+    const inputCanvas = document.getElementById("inputCanvas");
+    const inputCtx = inputCanvas.getContext("2d");
     
     let centerOffsetXScale = 0.5;
     let centerOffsetYScale = 0.5;
@@ -10,10 +12,14 @@ document.addEventListener("DOMContentLoaded", () => {
     let scale_array = [1,2,5];
     let scale_idx = 0;
     let cell_length = 0;
-    let cell_length_prev = 0;
 
-    const inputCanvas = document.getElementById("inputCanvas");
-    const inputCtx = inputCanvas.getContext("2d");
+    let centerX = 0;
+    let centerY = 0;
+
+    let mouse_pos_x = 0;
+    let mouse_pos_y = 0;
+    let mouse_coord_x = 0;
+    let mouse_coord_y = 0;
 
     // Function used for drawing lines
     function drawLine(ctx, xa, ya, xb, yb, thickness = 2, color = "black"){
@@ -25,23 +31,24 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.stroke();
     }
 
-    // Draws the Grid and the graph
-    function drawGrid(){
-        function f(x){
-            return Math.pow(x, 3) + 1/50*Math.pow(x, 2) - 5*x + 4;
-        }
-
+    function setGridVars(){
         // Get window size
         ctx.canvas.width = (5/6)*window.innerWidth;
         ctx.canvas.height = window.innerHeight;
         
         // Determine Cell Size
-        cell_length_prev = cell_length;
         cell_length = (grid_zoom > 0) ? canvas.width/grid_zoom : canvas.width*Math.abs(grid_zoom);
 
         // The center
-        let centerX = window.innerWidth*centerOffsetXScale;
-        let centerY = window.innerHeight*centerOffsetYScale;
+        centerX = window.innerWidth*centerOffsetXScale;
+        centerY = window.innerHeight*centerOffsetYScale;
+    }
+
+    // Draws the Grid and the graph
+    function drawGrid(){
+        function f(x){
+            return Math.pow(x, 3) + 1/50*Math.pow(x, 2) - 5*x + 4;
+        }
         
         // Draw x-axis and y-axis lines respectively
         drawLine(ctx, 0, centerY, canvas.width, centerY, 2, "black");
@@ -101,6 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Detect if window has been resized
     window.addEventListener("resize", () => {
+        setGridVars();
         drawGrid();
         drawInputCanvas();
     });
@@ -122,6 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if(held){
             centerOffsetXScale += event.movementX/1000;
             centerOffsetYScale += event.movementY/1000;
+            setGridVars();
             drawGrid();
         }
     });
@@ -131,9 +140,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Listens for scroll-wheel, used to zoom in and out on graph
     canvas.addEventListener("wheel", (event) => {
+        let prev_scale = scale;
+        let rect = canvas.getBoundingClientRect();
+        mouse_coord_x = (event.clientX-rect.left-centerX)/(scale*cell_length);
+        mouse_coord_y = (centerY-(event.clientY-rect.top))/(scale*cell_length);
+        mouse_pos_x = event.clientX-rect.left;
+        mouse_pos_y = event.clientY-rect.top;
+
         grid_zoom += event.deltaY/100;
 
-        // Resize graph based on zoom levels
+        // Rescale graph based on zoom levels
         if(canvas.width/(cell_length*scale) >= 20 && event.deltaY > 0){
             if((scale_idx + 1) % 3 == 0){
                 scale_array = scale_array.map(num => num*10);
@@ -157,21 +173,22 @@ document.addEventListener("DOMContentLoaded", () => {
         if(grid_zoom == 0 && event.deltaY > 0){
             grid_zoom = 2;
         }
-        let cell_length_delta = ((grid_zoom > 0) ? canvas.width/grid_zoom : canvas.width*Math.abs(grid_zoom))/cell_length;
-        let rect = canvas.getBoundingClientRect();
-        let angle = Math.atan2((canvas.height/2)-event.clientY+rect.top, (canvas.width/2)-event.clientX+rect.left)
-        let r = Math.sqrt(Math.pow((canvas.width/2)-event.clientX+rect.left, 2) + Math.pow((canvas.height/2)-event.clientY+rect.top, 2));
-        console.log("---------------------------");
-        console.log("cell_length: ", cell_length);
-        console.log("angle: ", angle);
-        console.log("cell_length_delta: ", cell_length_delta);
-        console.log("r: ", r);
-        centerOffsetXScale += (r*Math.cos(angle))/(canvas.width*cell_length_delta);
-        centerOffsetYScale += (r*Math.sin(angle))/(canvas.height*cell_length_delta);
+
+        setGridVars();
+        // d* = (where coordinate will be if zooming from center relative to canvas coord) - (current mouse position relative to canvas coord)
+        let dx = centerX+prev_scale*cell_length*mouse_coord_x - mouse_pos_x;
+        let dy = centerY-prev_scale*cell_length*mouse_coord_y - mouse_pos_y;
+        // Offset center such that mouse position stays over same coordinate position when zooming in/out
+        centerX -= dx;
+        centerY -= dy;
+        // Adjust offset scale variables used for shifting graph
+        centerOffsetXScale = centerX/window.innerWidth;
+        centerOffsetYScale = centerY/window.innerHeight;
         drawGrid();
         drawInputCanvas();
     });
 
+    setGridVars();
     drawGrid();
     drawInputCanvas();
 });
