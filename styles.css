@@ -70,9 +70,17 @@ a:hover, a:active {
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
     background-color: white;
     }
-    .inputCanvas{
+    /* .inputCanvas{
         grid-column: 1/2;
-    }
+    } */
     .myCanvas{
         grid-column: 2/6;
     }
+    .equation-container{
+        grid-column: 1/2;
+        display: grid;
+        grid-template-rows: 85px 2ch 1fr 1fr 1fr 1fr;
+        }
+        .equation{
+            grid-row: 2/3;
+        }

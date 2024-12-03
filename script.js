@@ -1,8 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
     const canvas = document.getElementById("myCanvas");
     const ctx = canvas.getContext("2d");
-    const inputCanvas = document.getElementById("inputCanvas");
-    const inputCtx = inputCanvas.getContext("2d");
+
+    const equation_box = document.getElementById("equation");
+    let f = Function("x", "return undefined;")
     
     let centerOffsetXScale = 0.5;
     let centerOffsetYScale = 0.5;
@@ -20,6 +21,20 @@ document.addEventListener("DOMContentLoaded", () => {
     let mouse_pos_y = 0;
     let mouse_coord_x = 0;
     let mouse_coord_y = 0;
+
+    function graphCurve(){
+        // Graph function using splines
+        let step = Math.abs(Math.floor(10000/grid_zoom));
+        let lower = -step*(Math.ceil(centerX/cell_length));
+        let upper = step*(Math.ceil((canvas.width-centerX)/cell_length));
+        for(let i = lower; i < upper; i++){
+            let xa = cell_length*((i-1)/step)+centerX;
+            let ya = -cell_length*f((i-1)/step)+centerY;
+            let xb = cell_length*i/step+centerX;
+            let yb = -cell_length*f(i/step)+centerY;
+            drawLine(ctx, xa, ya, xb, yb, 2, "red"); 
+        }
+    }
 
     // Function used for drawing lines
     function drawLine(ctx, xa, ya, xb, yb, thickness = 2, color = "black"){
@@ -45,11 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Draws the Grid and the graph
-    function drawGrid(){
-        function f(x){
-            return Math.pow(x, 3) + 1/50*Math.pow(x, 2) - 5*x + 4;
-        }
-        
+    function drawGrid(){        
         // Draw x-axis and y-axis lines respectively
         drawLine(ctx, 0, centerY, canvas.width, centerY, 2, "black");
         drawLine(ctx, centerX, 0, centerX, canvas.height, 2, "black");
@@ -85,32 +96,13 @@ document.addEventListener("DOMContentLoaded", () => {
             let idx = get_idx(i);
             ctx.fillText(idx.toString(), centerX+10, centerY-y-3);
         }
-
-        // Graph function using splines
-        let step = Math.abs(Math.floor(10000/grid_zoom));
-        let lower = -step*(Math.ceil(centerX/cell_length));
-        let upper = step*(Math.ceil((canvas.width-centerX)/cell_length));
-        for(let i = lower; i < upper; i++){
-            let xa = cell_length*((i-1)/step)+centerX;
-            let ya = -cell_length*f((i-1)/step)+centerY;
-            let xb = cell_length*i/step+centerX;
-            let yb = -cell_length*f(i/step)+centerY;
-            drawLine(ctx, xa, ya, xb, yb, 2, "red"); 
-        }
-    }
-
-    function drawInputCanvas(){
-        // Draw line separating inputCanvas and gridCanvas
-        inputCtx.canvas.height = window.innerHeight;
-        inputCtx.canvas.width = window.innerWidth/6;
-        drawLine(inputCtx, inputCanvas.width-1, 0, inputCanvas.width-1, inputCanvas.height-1, 4, "black");
     }
 
     // Detect if window has been resized
     window.addEventListener("resize", () => {
         setGridVars();
         drawGrid();
-        drawInputCanvas();
+        graphCurve();
     });
     
     // Detect if left click is down and mouse is moving, used for shifting graph
@@ -132,6 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
             centerOffsetYScale += event.movementY/1000;
             setGridVars();
             drawGrid();
+            graphCurve();
         }
     });
     canvas.addEventListener("mouseleave", () => {
@@ -185,10 +178,19 @@ document.addEventListener("DOMContentLoaded", () => {
         centerOffsetXScale = centerX/window.innerWidth;
         centerOffsetYScale = centerY/window.innerHeight;
         drawGrid();
-        drawInputCanvas();
+        graphCurve();
+    });
+
+    equation_box.addEventListener("input", () => {
+        console.log(equation_box.value);
+
+        f = Function("x", "return " + equation_box.value);
+        setGridVars();
+        drawGrid();
+        graphCurve();
     });
 
     setGridVars();
     drawGrid();
-    drawInputCanvas();
+    graphCurve();
 });
