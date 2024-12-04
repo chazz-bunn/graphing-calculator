@@ -1,10 +1,11 @@
+import {drawCurve} from "./modules/draw_curve.js";
+
 document.addEventListener("DOMContentLoaded", () => {
     const canvas = document.getElementById("myCanvas");
     const ctx = canvas.getContext("2d");
 
     const equation_box = document.getElementById("equation");
-    let f = Function("x", "return undefined;")
-    
+    let f = Function("x", "return undefined;");
     let centerOffsetXScale = 0.5;
     let centerOffsetYScale = 0.5;
 
@@ -182,8 +183,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     equation_box.addEventListener("input", () => {
-        console.log(equation_box.value);
-
         f = Function("x", "return " + equation_box.value);
         setGridVars();
         drawGrid();
