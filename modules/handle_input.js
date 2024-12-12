@@ -32,13 +32,33 @@ export function handle_input(input_str){
         str = str.split("");
         let numberBuffer = "";
         let letterBuffer = "";
-        str.forEach((char) => {
-            if(isDigit(char)){
+        str.forEach((char, idx) => {
+            if(isDigit(char) || char == "."){
                 if(letterBuffer){
-                    if(letterBuffer in list_of_variables){
-                        // May have to look at things other way around to see variable chain such as "xy"
-                        result.push(new Token("Operator", "*"));
+                    if(list_of_variables.includes(letterBuffer)){
                         result.push(new Token("Variable", letterBuffer));
+                        result.push(new Token("Operator", "*"));
+                        letterBuffer = "";
+                    }
+                    else{
+                        let var_chain = true;
+                        list_of_variables.forEach((var_char) => {
+                            if(!(letterBuffer.split("").includes(var_char))){
+                                var_chain = false;
+                            }
+                        });
+
+                        if(var_chain){
+                            letterBuffer.split("").forEach((ch, idx) => {
+                                result.push(new Token("Variable", ch));
+                                if(idx < letterBuffer.split("").length - 1){
+                                    result.push(new Token("Operator", "*"));
+                                }
+                            });
+                        }
+                        else{
+                            //Invalid Input
+                        }
                         letterBuffer = "";
                     }
                 }
@@ -47,27 +67,144 @@ export function handle_input(input_str){
             else if(isLetter(char)){
                 if(numberBuffer){
                     result.push(new Token("Literal", numberBuffer));
+                    result.push(new Token("Operator", "*"));
                     numberBuffer = "";
                 }
                 letterBuffer += char;
             }
             else if(isOperator(char)){
+                if(numberBuffer){
+                    result.push(new Token("Literal", numberBuffer));
+                    numberBuffer = "";
+                }
+                if(letterBuffer){
+                    if(list_of_variables.includes(letterBuffer)){
+                        result.push(new Token("Variable", letterBuffer));
+                        result.push(new Token("Operator", "*"));
+                        letterBuffer = "";
+                    }
+                    else{
+                        let var_chain = true;
+                        list_of_variables.forEach((var_char) => {
+                            if(!(letterBuffer.split("").includes(var_char))){
+                                var_chain = false;
+                            }
+                        });
+
+                        if(var_chain){
+                            letterBuffer.split("").forEach((ch, idx) => {
+                                result.push(new Token("Variable", ch));
+                                if(idx < letterBuffer.split("").length - 1){
+                                    result.push(new Token("Operator", "*"));
+                                }
+                            });
+                        }
+                        else{
+                            //Invalid Input
+                        }
+                        letterBuffer = "";
+                    }
+                }
                 result.push(new Token("Operator", char));
             }
             else if(isLeftParenthesis(char)){
+                let fn_idx = -1;
                 if(letterBuffer){
-                    if(letterBuffer in list_of_functions){
-                        result.push("Operator", letterBuffer);
+                    for(let i = 0; i < list_of_functions.length; i++){
+                        if(letterBuffer.endsWith(list_of_functions[i])){
+                            fn_idx = letterBuffer.indexOf(list_of_functions[i]);
+                            break;
+                        }
+                    }
+                    if(fn_idx > -1){
+                        for(let i = 0; i < fn_idx; i++){
+                            if(list_of_variables.includes(letterBuffer[i])){
+                                result.push(new Token("Variable", letterBuffer[i]));
+                                result.push(new Token("Operator", "*"));
+                            }
+                            else{
+                                //Invalid Input
+                            }
+                        }
+                        result.push(new Token("Function", letterBuffer.substring(fn_idx)));
+                        letterBuffer = "";
+                    }
+                    else if(list_of_variables.includes(letterBuffer)){
+                        result.push(new Token("Variable", letterBuffer));
+                        result.push(new Token("Operator", "*"));
+                        letterBuffer = "";
+                    }
+                    else{
+                        let var_chain = true;
+                        list_of_variables.forEach((var_char) => {
+                            if(!(letterBuffer.split("").includes(var_char))){
+                                var_chain = false;
+                            }
+                        });
+
+                        if(var_chain){
+                            letterBuffer.split("").forEach((ch, idx) => {
+                                result.push(new Token("Variable", ch));
+                                if(idx < letterBuffer.split("").length - 1){
+                                    result.push(new Token("Operator", "*"));
+                                }
+                            });
+                        }
+                        else{
+                            //Invalid Input
+                        }
+                        result.push(new Token("Operator", "*"));
+                        letterBuffer = "";
                     }
                 }
-                //result.push(new Token("Left Paranthesis", char));
+                else if(numberBuffer){
+                    result.push(new Token("Literal", numberBuffer));
+                    result.push(new Token("Operator", "*"));
+                    numberBuffer = "";
+                }
+                result.push(new Token("Left Paranthesis", char));
             }
             else if(isRightParenthesis(char)){
+                if(numberBuffer){
+                    result.push(new Token("Literal", numberBuffer));
+                }
+                else if(letterBuffer){
+                    if(list_of_variables.includes(letterBuffer)){
+                        result.push(new Token("Variable", letterBuffer));
+                        letterBuffer = "";
+                    }
+                    else{
+                        let var_chain = true;
+                        list_of_variables.forEach((var_char) => {
+                            if(!(letterBuffer.split("").includes(var_char))){
+                                var_chain = false;
+                            }
+                        });
+
+                        if(var_chain){
+                            letterBuffer.split("").forEach((ch, idx) => {
+                                result.push(new Token("Variable", ch));
+                                if(idx < letterBuffer.split("").length - 1){
+                                    result.push(new Token("Operator", "*"));
+                                }
+                            });
+                        }
+                        else{
+                            //Invalid Input
+                        }
+                        letterBuffer = "";
+                    }
+                }
                 result.push(new Token("Right Paranthesis", char));
             }
             else if(isComma(char)){
+                /* 
+                ************************************
+                Only this left to complete tokenizer
+                ************************************
+                */
                 result.push(new Token("Function Argument Separator", char));
-            } 
+            }
         });
         return result;
     }
