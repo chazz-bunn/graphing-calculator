@@ -23,15 +23,20 @@ export function infix_to_postfix(tokens){
                     if(operator_stack.at(-1).value != "("){
                         let p1 = [0, "right"];
                         let p2 = [0, "right"];
+                        /*
+                        *******************
+                        Fix this loop below
+                        *******************
+                        */
                         operator_table.forEach(function(symbol, precedence, associativity){
                             if(symbol == operator_stack.at(-1).value){
                                 p2 = [precedence, associativity];
-                                console.log("p2: ", p2);
                             }
                             if(symbol == token.value){
                                 p1 = [precedence, associativity];
-                                console.log("p1: ", p1);
                             }
+                            console.log("p1: ", p1);
+                            console.log("p2: ", p2);
                         });
                         if(p2.at(0) > p1.at(0)){
                             output.push(operator_stack.pop());
