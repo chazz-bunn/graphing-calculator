@@ -33,7 +33,19 @@ export function tokenize(str){
                 letterBuffer = "";
             }
             else{
-                let var_chain = true;
+                letterBuffer.split("").forEach((ch, idx) => { 
+                    if(list_of_variables.includes(ch)){
+                        result.push(new Token("Variable", ch));
+                    }
+                    else if(isLetter(ch)){
+                        result.push(new Token("Constant", ch));
+                    }
+                    
+                    if(idx < letterBuffer.split("").length - 1 || !beforeOp){
+                        result.push(new Token("Operator", "*"));
+                    }
+                });
+                /* let var_chain = true;
                 list_of_variables.forEach((var_char) => {
                     if(!(letterBuffer.split("").includes(var_char))){
                         var_chain = false;
@@ -50,7 +62,7 @@ export function tokenize(str){
                 }
                 else{
                     //Invalid Input
-                }
+                } */
                 letterBuffer = "";
             }
         }
@@ -101,7 +113,8 @@ export function tokenize(str){
                                 result.push(new Token("Operator", "*"));
                             }
                             else{
-                                //Invalid Input
+                                result.push(new Token("Constant", letterBuffer[i]));
+                                result.push(new Token("Operator", "*"));
                             }
                         }
                         result.push(new Token("Function", letterBuffer.substring(fn_idx)));
