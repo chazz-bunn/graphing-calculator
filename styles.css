@@ -75,10 +75,12 @@ a:hover, a:active {
     } */
     .myCanvas{
         grid-column: 2/6;
+        background-color: white;
     }
     .equation-container{
         grid-column: 1/2;
         display: grid;
+        background-color: white;
         grid-template-rows: 85px 2ch 1fr 1fr 1fr 1fr;
         }
         .equation{

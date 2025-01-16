@@ -3,6 +3,10 @@ export class MyCanvas{
         this.f = Function("x", "return undefined;");
         this.canvas = document.getElementById(canvas_id);
         this.ctx = this.canvas.getContext("2d");
+        //this.ctx = this.canvas.getContext("2d", {alpha:false});
+        /* this.ctx.globalCompositeOperation = 'destination-over';
+        this.ctx.fillStyle = "blue";
+        this.ctx.fillRect(0, 0, canvas.width, canvas.height); */
 
         this.centerOffsetXScale = 0.5;
         this.centerOffsetYScale = 0.5;
@@ -85,8 +89,25 @@ export class MyCanvas{
         this.f = Function("x", "return " + eq_string + ";");
     }
 
-    graphCurve(){
-        // Graph function using splines
+    graphCurve(tokens){
+        let step = Math.abs(Math.floor(10000/this.grid_zoom));
+        let leftmost = -step*(Math.ceil(this.centerX/this.cell_length));
+        let rightmost = step*(Math.ceil((this.canvas.width-this.centerX)/this.cell_length));
+        console.log("Domain: (", leftmost, ", ", rightmost, ")");
+        let topmost = -step*(Math.ceil(this.centerY/this.cell_length));
+        let bottommost = step*(Math.ceil((this.canvas.height-this.centerY)/this.cell_length));
+        console.log("Range: (", topmost, ", ", bottommost, ")");
+        this.ctx.fillStyle = "red";
+        for(let i = leftmost; i < rightmost; i++){
+            let xa = this.cell_length*((i-1)/step)+this.centerX;
+            
+        }
+        /* for(let j = topmost; j < bottommost; j++){
+            let ya = this.cell_length*((j-1)/step)+this.centerY;
+            this.ctx.fillStyle = "red";
+            this.ctx.fillRect(this.centerX, ya, 1, 1);
+        } */
+        /* // Graph function using splines
         let step = Math.abs(Math.floor(10000/this.grid_zoom));
         let lower = -step*(Math.ceil(this.centerX/this.cell_length));
         let upper = step*(Math.ceil((this.canvas.width-this.centerX)/this.cell_length));
@@ -96,7 +117,7 @@ export class MyCanvas{
             let xb = this.cell_length*i/step+this.centerX;
             let yb = -this.cell_length*this.f(i/step)+this.centerY;
             this.drawLine(xa, ya, xb, yb, 2, "red"); 
-        }
+        } */
     }
 
     setCenterOffset(centerOffsetXScale, centerOffsetYScale){

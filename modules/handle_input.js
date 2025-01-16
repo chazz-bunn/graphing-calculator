@@ -2,16 +2,6 @@ import { infix_to_postfix } from "./infix_to_postfix.js";
 import { tokenize } from "./tokenize.js";
 
 export function handle_input(input_str){
-
-    const operator_table = [
-        ["^", 4, "right"],
-        ["*", 3, "left"],
-        ["/", 3, "left"],
-        ["+", 2, "left"],
-        ["-", 2, "left"]
-    ];
-
-
     if(input_str.includes("=")){
         let sides = input_str.split("=");
         if(sides.length == 2){
@@ -33,7 +23,6 @@ export function handle_input(input_str){
     else{
         let tokens = tokenize(input_str);
         let rpn = infix_to_postfix(tokens);
-        console.log("Postfix");
-        console.log(rpn);
+        return rpn;
     }
 }

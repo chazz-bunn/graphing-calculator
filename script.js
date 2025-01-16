@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     
     equation_box.addEventListener("input", () => {
-        grid.setEquation(handle_input(equation_box.value));
+        handle_input(equation_box.value);
         grid.setVarsDrawGridDrawCurve();
     }); 
 
