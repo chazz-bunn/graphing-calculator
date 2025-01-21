@@ -4,9 +4,10 @@ import { handle_input } from "./modules/handle_input.js";
 document.addEventListener("DOMContentLoaded", () => {
     const grid = new MyCanvas("myCanvas");
     const equation_box = document.getElementById("equation");
+    let tokens = [];
     // Detect if window has been resized
     window.addEventListener("resize", () => {
-        grid.setVarsDrawGridDrawCurve();
+        grid.setVarsDrawGridDrawCurve(tokens);
     });
     
     // Detect if left click is down and mouse is moving, used for shifting graph
@@ -25,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if(held){
             grid.setCenterOffset(event.movementX/1000, event.movementY/1000);
-            grid.setVarsDrawGridDrawCurve();
+            grid.setVarsDrawGridDrawCurve(tokens);
         }
     });
     grid.getCanvas().addEventListener("mouseleave", () => {
@@ -34,13 +35,13 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // Listens for scroll-wheel, used to zoom in and out on graph
     grid.getCanvas().addEventListener("wheel", (event) => {
-        grid.setGridZoom(event.clientX, event.clientY, event.deltaY);
+        grid.setGridZoom(event.clientX, event.clientY, event.deltaY, tokens);
     });
     
     equation_box.addEventListener("input", () => {
-        handle_input(equation_box.value);
-        grid.setVarsDrawGridDrawCurve();
+        tokens = handle_input(equation_box.value);
+        grid.setVarsDrawGridDrawCurve(tokens);
     }); 
 
-    grid.setVarsDrawGridDrawCurve();
+    grid.setVarsDrawGridDrawCurve(tokens);
 });

@@ -1,3 +1,5 @@
+import { postfix_eval } from "./postfix_eval.js";
+
 export class MyCanvas{
     constructor(canvas_id){
         this.f = Function("x", "return undefined;");
@@ -7,7 +9,6 @@ export class MyCanvas{
         /* this.ctx.globalCompositeOperation = 'destination-over';
         this.ctx.fillStyle = "blue";
         this.ctx.fillRect(0, 0, canvas.width, canvas.height); */
-
         this.centerOffsetXScale = 0.5;
         this.centerOffsetYScale = 0.5;
 
@@ -86,38 +87,28 @@ export class MyCanvas{
     }
 
     setEquation(eq_string){
-        this.f = Function("x", "return " + eq_string + ";");
+        this.f = Function("x", "return " + "x" + ";");
     }
 
     graphCurve(tokens){
-        let step = Math.abs(Math.floor(10000/this.grid_zoom));
-        let leftmost = -step*(Math.ceil(this.centerX/this.cell_length));
-        let rightmost = step*(Math.ceil((this.canvas.width-this.centerX)/this.cell_length));
-        console.log("Domain: (", leftmost, ", ", rightmost, ")");
-        let topmost = -step*(Math.ceil(this.centerY/this.cell_length));
-        let bottommost = step*(Math.ceil((this.canvas.height-this.centerY)/this.cell_length));
-        console.log("Range: (", topmost, ", ", bottommost, ")");
-        this.ctx.fillStyle = "red";
-        for(let i = leftmost; i < rightmost; i++){
-            let xa = this.cell_length*((i-1)/step)+this.centerX;
-            
+        // Graph function using splines
+        function test(x){
+            return Math.tan(x);
         }
-        /* for(let j = topmost; j < bottommost; j++){
-            let ya = this.cell_length*((j-1)/step)+this.centerY;
-            this.ctx.fillStyle = "red";
-            this.ctx.fillRect(this.centerX, ya, 1, 1);
-        } */
-        /* // Graph function using splines
+
         let step = Math.abs(Math.floor(10000/this.grid_zoom));
         let lower = -step*(Math.ceil(this.centerX/this.cell_length));
         let upper = step*(Math.ceil((this.canvas.width-this.centerX)/this.cell_length));
+
         for(let i = lower; i < upper; i++){
             let xa = this.cell_length*((i-1)/step)+this.centerX;
-            let ya = -this.cell_length*this.f((i-1)/step)+this.centerY;
+            let ya = -this.cell_length*postfix_eval(tokens, (i-1)/step)+this.centerY;
             let xb = this.cell_length*i/step+this.centerX;
-            let yb = -this.cell_length*this.f(i/step)+this.centerY;
-            this.drawLine(xa, ya, xb, yb, 2, "red"); 
-        } */
+            let yb = -this.cell_length*postfix_eval(tokens, i/step)+this.centerY;
+            if( (ya >= 0 && yb >= 0) && (ya <= this.canvas.height && yb <= this.canvas.height)){
+                this.drawLine(xa, ya, xb, yb, 2, "red"); 
+            }
+        }
     }
 
     setCenterOffset(centerOffsetXScale, centerOffsetYScale){
@@ -125,7 +116,7 @@ export class MyCanvas{
         this.centerOffsetYScale += centerOffsetYScale;
     }
 
-    setGridZoom(x_pos, y_pos, zoom){
+    setGridZoom(x_pos, y_pos, zoom, tokens){
         let prev_scale = this.getScale();
         let rect = this.canvas.getBoundingClientRect();
         let mouse_coord_x = (x_pos-rect.left-this.centerX)/(this.scale*this.cell_length);
@@ -171,12 +162,12 @@ export class MyCanvas{
         this.centerOffsetXScale = this.centerX/window.innerWidth;
         this.centerOffsetYScale = this.centerY/window.innerHeight;
         this.drawGrid();
-        this.graphCurve();
+        this.graphCurve(tokens);
     }
 
-    setVarsDrawGridDrawCurve(){
+    setVarsDrawGridDrawCurve(tokens){
         this.setGridVars();
         this.drawGrid();
-        this.graphCurve();
+        this.graphCurve(tokens);
     }
 }
