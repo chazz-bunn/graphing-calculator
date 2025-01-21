@@ -1,4 +1,5 @@
 import { Token } from "./token.js";
+import { list_of_functions } from "./list_of_functions.js";
 
 export function tokenize(str){
         let result = [];
@@ -6,14 +7,6 @@ export function tokenize(str){
         str = str.split("");
         let numberBuffer = "";
         let letterBuffer = "";
-
-        const list_of_functions = [
-            "cos", "sin", "tan", "sec", "csc", "cot",
-            "arccos", "arcsin", "arctan", "arcsec", "arccsc", "arccot",
-            "cosh", "sinh", "tanh", "sech", "csch", "coth",
-            "ln", "log",
-            "max", "min"
-        ];
     
         let list_of_variables = ["x", "y"];
     
@@ -33,36 +26,39 @@ export function tokenize(str){
                 letterBuffer = "";
             }
             else{
+                let p_flag = false;
                 letterBuffer.split("").forEach((ch, idx) => { 
                     if(list_of_variables.includes(ch)){
                         result.push(new Token("Variable", ch));
                     }
                     else if(isLetter(ch)){
-                        result.push(new Token("Constant", ch));
+                        if(p_flag){
+                            if(ch == 'i'){
+                                result.push(new Token("Literal", Math.PI))
+                            }
+                            else{
+                                result.push(new Token("Constant", 'i'));
+                                result.push(new Token("Operator", "*"));
+                                result.push(new Token("Constant", ch));
+                            }
+                            p_flag = false
+                        }
+                        else if(ch == 'p'){
+                            p_flag = true
+                        }
+                        else if(ch == 'e'){
+                            result.push(new Token("Literal", Math.exp(1)))
+                        }
+                        else{
+                            result.push(new Token("Constant", ch));
+                        }
                     }
-                    
-                    if(idx < letterBuffer.split("").length - 1 || !beforeOp){
-                        result.push(new Token("Operator", "*"));
-                    }
-                });
-                /* let var_chain = true;
-                list_of_variables.forEach((var_char) => {
-                    if(!(letterBuffer.split("").includes(var_char))){
-                        var_chain = false;
-                    }
-                });
-
-                if(var_chain){
-                    letterBuffer.split("").forEach((ch, idx) => {
-                        result.push(new Token("Variable", ch));
+                    if(!p_flag){
                         if(idx < letterBuffer.split("").length - 1 || !beforeOp){
                             result.push(new Token("Operator", "*"));
                         }
-                    });
-                }
-                else{
-                    //Invalid Input
-                } */
+                    }
+                });
                 letterBuffer = "";
             }
         }
@@ -107,13 +103,33 @@ export function tokenize(str){
                         }
                     }
                     if(fn_idx > -1){
+                        let p_flag = false
                         for(let i = 0; i < fn_idx; i++){
                             if(list_of_variables.includes(letterBuffer[i])){
                                 result.push(new Token("Variable", letterBuffer[i]));
                                 result.push(new Token("Operator", "*"));
                             }
                             else{
-                                result.push(new Token("Constant", letterBuffer[i]));
+                                if(p_flag){
+                                    if(letterBuffer[i] == 'i'){
+                                        result.push(new Token("Literal", Math.PI));
+                                    }
+                                    else{
+                                        result.push(new Token('Constant', 'p'));
+                                        result.push(new Token("Operator", "*"));
+                                        result.push(new Token("Constant", letterBuffer[i]));
+                                    }
+                                    p_flag = false;
+                                }
+                                else if(letterBuffer[i] == 'p'){
+                                    p_flag = true;
+                                }
+                                else if(letterBuffer[i] == 'e'){
+                                    result.push(new Token("Literal", Math.exp(1)))
+                                }
+                                else{
+                                    result.push(new Token("Constant", letterBuffer[i]));
+                                }
                                 result.push(new Token("Operator", "*"));
                             }
                         }
