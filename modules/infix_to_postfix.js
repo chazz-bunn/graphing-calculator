@@ -83,8 +83,10 @@ export function infix_to_postfix(tokens){
             else{
                 operator_stack.pop();
             }
-            if(operator_stack.at(-1).type == "Function"){
-                output.push(operator_stack.pop());
+            if(operator_stack.length > 0){
+                if(operator_stack.at(-1).type == "Function"){
+                    output.push(operator_stack.pop());
+                }
             }
         }
     });
