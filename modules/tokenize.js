@@ -125,7 +125,7 @@ export function tokenize(str){
                                     p_flag = true;
                                 }
                                 else if(letterBuffer[i] == 'e'){
-                                    result.push(new Token("Literal", Math.exp(1)))
+                                    result.push(new Token("Literal", Math.exp(1)));
                                 }
                                 else{
                                     result.push(new Token("Constant", letterBuffer[i]));
