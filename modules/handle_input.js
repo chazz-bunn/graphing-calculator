@@ -23,6 +23,7 @@ export function handle_input(input_str){
     else{
         let tokens = tokenize(input_str);
         let rpn = infix_to_postfix(tokens);
+        console.log(rpn);
         return rpn;
     }
 }

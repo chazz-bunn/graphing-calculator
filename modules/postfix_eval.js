@@ -14,7 +14,7 @@ export function postfix_eval(tokens, x){
 
             switch(token.value){
                 case '+':
-                    stack.push(val2+val1);
+                    stack.push(+val2 + +val1);
                     break;
                 case '-':
                     stack.push(val2-val1);
