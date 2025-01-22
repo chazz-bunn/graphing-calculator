@@ -56,6 +56,7 @@ export function postfix_eval(tokens, x){
                         stack.push(1/Math.tan(val));
                         break;
                     case 'arccos':
+                        console.log("Here");
                         stack.push(Math.acos(val));
                         break;
                     case 'arcsin':
