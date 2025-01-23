@@ -85,13 +85,19 @@ export function tokenize(str){
                 letterBuffer += char;
             }
             else if(isOperator(char)){
-                if(numberBuffer){
-                    clearNumberBuffer(true);
+                if(char == '-' && !numberBuffer && !letterBuffer){
+                    result.push(new Token("Literal", -1));
+                    result.push(new Token("Operator", "*"));
                 }
-                else if(letterBuffer){
-                    clearLetterBuffer(true);
+                else{
+                    if(numberBuffer){
+                        clearNumberBuffer(true);
+                    }
+                    else if(letterBuffer){
+                        clearLetterBuffer(true);
+                    }
+                    result.push(new Token("Operator", char));
                 }
-                result.push(new Token("Operator", char));
             }
             else if(isLeftParenthesis(char)){
                 let fn_idx = -1;
