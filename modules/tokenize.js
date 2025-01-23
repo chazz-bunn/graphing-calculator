@@ -85,7 +85,8 @@ export function tokenize(str){
                 letterBuffer += char;
             }
             else if(isOperator(char)){
-                if(char == '-' && !numberBuffer && !letterBuffer){
+                if(char == '-' && !numberBuffer && !letterBuffer && result.at(-1).type != "Right Paranthesis"){
+                    console.log(result.at(-1));
                     result.push(new Token("Literal", -1));
                     result.push(new Token("Operator", "*"));
                 }
