@@ -5,10 +5,6 @@ export class MyCanvas{
         this.f = Function("x", "return undefined;");
         this.canvas = document.getElementById(canvas_id);
         this.ctx = this.canvas.getContext("2d");
-        //this.ctx = this.canvas.getContext("2d", {alpha:false});
-        /* this.ctx.globalCompositeOperation = 'destination-over';
-        this.ctx.fillStyle = "blue";
-        this.ctx.fillRect(0, 0, canvas.width, canvas.height); */
         this.centerOffsetXScale = 0.5;
         this.centerOffsetYScale = 0.5;
 
@@ -86,16 +82,8 @@ export class MyCanvas{
         }
     }
 
-    setEquation(eq_string){
-        this.f = Function("x", "return " + "x" + ";");
-    }
-
     graphCurve(tokens){
         // Graph function using splines
-        function test(x){
-            return Math.tan(x);
-        }
-
         let step = Math.abs(Math.floor(10000/this.grid_zoom));
         let lower = -step*(Math.ceil(this.centerX/this.cell_length));
         let upper = step*(Math.ceil((this.canvas.width-this.centerX)/this.cell_length));
@@ -106,7 +94,7 @@ export class MyCanvas{
             let xb = this.cell_length*i/step+this.centerX;
             let yb = -this.cell_length*postfix_eval(tokens, i/step)+this.centerY;
             if( (ya >= 0 && yb >= 0) && (ya <= this.canvas.height && yb <= this.canvas.height)){
-                this.drawLine(xa, ya, xb, yb, 2, "red"); 
+                this.drawLine(xa, ya, xb, yb, 3, "red"); 
             }
         }
     }

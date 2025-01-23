@@ -3,5 +3,6 @@ export const list_of_functions = [
     "cos", "sin", "tan", "sec", "csc", "cot",
     "cosh", "sinh", "tanh", "sech", "csch", "coth",
     "ln", "log",
+    "abs",
     "max", "min"
 ];

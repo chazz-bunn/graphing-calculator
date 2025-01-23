@@ -95,6 +95,9 @@ export function postfix_eval(tokens, x){
                     case 'log':
                         stack.push(Math.log10(val));
                         break;
+                    case "abs":
+                        stack.push(Math.abs(val));
+                        break;
                 }
             }
         }
