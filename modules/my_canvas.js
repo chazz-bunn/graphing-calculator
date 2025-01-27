@@ -91,11 +91,22 @@ export class MyCanvas{
         for(let i = lower; i < upper; i++){
             let xa = this.cell_length*((i-1)/step)+this.centerX;
             let ya = -this.cell_length*postfix_eval(tokens, (i-1)/step)+this.centerY;
+            if(ya < 0){
+                ya = 0;
+            }
+            if(ya > this.canvas.height){
+                ya = this.canvas.height+2;
+            }
             let xb = this.cell_length*i/step+this.centerX;
             let yb = -this.cell_length*postfix_eval(tokens, i/step)+this.centerY;
-            if( (ya >= 0 && yb >= 0) && (ya <= this.canvas.height && yb <= this.canvas.height)){
-                this.drawLine(xa, ya, xb, yb, 3, "red"); 
+            if(yb < 0){
+                yb = 0;
             }
+            if(yb > this.canvas.height){
+                yb = this.canvas.height+2;
+            }
+
+            this.drawLine(xa, ya, xb, yb, 3, "red");
         }
     }
 
