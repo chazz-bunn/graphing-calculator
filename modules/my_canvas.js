@@ -84,7 +84,39 @@ export class MyCanvas{
 
     graphCurve(tokens){
         // Graph function using splines
-        let step = Math.abs(Math.floor(10000/this.grid_zoom));
+        let leftmost = Math.floor((-this.centerX)/(this.cell_length));
+        let rightmost = Math.ceil((this.canvas.width-this.centerX)/(this.cell_length));
+        let steps = 10000;
+        let step_size = (rightmost - leftmost)/steps;
+
+        for(let i = 0; i <= steps; i++){
+            let x_coorda = leftmost+step_size*(i-1);
+            let xa = this.cell_length*x_coorda+this.centerX;
+            let ya = -this.cell_length*postfix_eval(tokens, x_coorda)+this.centerY;
+            if(ya < 0){
+                ya = 0;
+            }
+            if(ya > this.canvas.height+2){
+                ya = this.canvas.height+2;
+            }
+
+            let x_coordb = leftmost+step_size*i;
+            let xb = this.cell_length*x_coordb+this.centerX;
+            let yb = -this.cell_length*postfix_eval(tokens, x_coordb)+this.centerY;
+            if(yb < 0){
+                yb = 0;
+            }
+            if(yb > this.canvas.height+2){
+                yb = this.canvas.height+2;
+            } 
+            
+            this.drawLine(xa, ya, xb, yb, 3, "red");  
+        }
+
+        //console.log("grid_zoom: ", this.grid_zoom);
+        //console.log("leftmost: ", leftmost, ", rightmost: ", rightmost);
+
+        /* let step = Math.abs(Math.floor(10000/this.grid_zoom));
         let lower = -step*(Math.ceil(this.centerX/this.cell_length));
         let upper = step*(Math.ceil((this.canvas.width-this.centerX)/this.cell_length));
 
@@ -107,7 +139,7 @@ export class MyCanvas{
             }
 
             this.drawLine(xa, ya, xb, yb, 3, "red");
-        }
+        } */
     }
 
     setCenterOffset(centerOffsetXScale, centerOffsetYScale){
