@@ -2,7 +2,6 @@ import { postfix_eval } from "./postfix_eval.js";
 
 export class MyCanvas{
     constructor(canvas_id){
-        this.f = Function("x", "return undefined;");
         this.canvas = document.getElementById(canvas_id);
         this.ctx = this.canvas.getContext("2d");
         this.centerOffsetXScale = 0.5;
@@ -16,6 +15,8 @@ export class MyCanvas{
 
         this.centerX = 0;
         this.centerY = 0;
+
+        this.canvasData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
     }
 
     get_idx(i){return (this.scale*1 < 0.01) ? (this.scale*i).toExponential(1): Math.round(100*this.scale*i)/100;}
@@ -83,6 +84,31 @@ export class MyCanvas{
     }
 
     graphCurve(tokens){
+        /* let leftmost = Math.floor((-this.centerX)/(this.cell_length));
+        let rightmost = Math.ceil((this.canvas.width-this.centerX)/(this.cell_length));
+        let x_steps = 1000;
+        let x_step_size = (rightmost - leftmost)/x_steps;
+
+        let topmost = (this.centerY)/(this.cell_length);
+        let bottommost = (this.centerY-this.canvas.height)/(this.cell_length);
+        let y_steps = 1000;
+        let y_step_size = (bottommost - topmost)/y_steps;
+
+        for(let i = 0; i <= x_steps; i++){
+            for(let j = 0; j <= y_steps; j++){
+                let x_coord = leftmost+x_step_size*i;
+                let y_coord = topmost+y_step_size*j;
+
+                let y_pos = -this.cell_length*y_coord+this.centerY;
+                let value = -this.cell_length*postfix_eval(tokens, x_coord)+this.centerY;
+                
+                if(Math.round(y_coord) == Math.round(value)){
+                    let x_pos = this.cell_length*x_coord+this.centerX;
+                    this.ctx.fillRect(x_pos, y_pos, 1, 1);
+                }
+            }
+        } */
+
         // Graph function using splines
         let leftmost = Math.floor((-this.centerX)/(this.cell_length));
         let rightmost = Math.ceil((this.canvas.width-this.centerX)/(this.cell_length));
@@ -93,53 +119,13 @@ export class MyCanvas{
             let x_coorda = leftmost+step_size*(i-1);
             let xa = this.cell_length*x_coorda+this.centerX;
             let ya = -this.cell_length*postfix_eval(tokens, x_coorda)+this.centerY;
-            if(ya < 0){
-                ya = 0;
-            }
-            if(ya > this.canvas.height+2){
-                ya = this.canvas.height+2;
-            }
 
             let x_coordb = leftmost+step_size*i;
             let xb = this.cell_length*x_coordb+this.centerX;
             let yb = -this.cell_length*postfix_eval(tokens, x_coordb)+this.centerY;
-            if(yb < 0){
-                yb = 0;
-            }
-            if(yb > this.canvas.height+2){
-                yb = this.canvas.height+2;
-            } 
-            
-            this.drawLine(xa, ya, xb, yb, 3, "red");  
-        }
-
-        //console.log("grid_zoom: ", this.grid_zoom);
-        //console.log("leftmost: ", leftmost, ", rightmost: ", rightmost);
-
-        /* let step = Math.abs(Math.floor(10000/this.grid_zoom));
-        let lower = -step*(Math.ceil(this.centerX/this.cell_length));
-        let upper = step*(Math.ceil((this.canvas.width-this.centerX)/this.cell_length));
-
-        for(let i = lower; i < upper; i++){
-            let xa = this.cell_length*((i-1)/step)+this.centerX;
-            let ya = -this.cell_length*postfix_eval(tokens, (i-1)/step)+this.centerY;
-            if(ya < 0){
-                ya = 0;
-            }
-            if(ya > this.canvas.height){
-                ya = this.canvas.height+2;
-            }
-            let xb = this.cell_length*i/step+this.centerX;
-            let yb = -this.cell_length*postfix_eval(tokens, i/step)+this.centerY;
-            if(yb < 0){
-                yb = 0;
-            }
-            if(yb > this.canvas.height){
-                yb = this.canvas.height+2;
-            }
 
             this.drawLine(xa, ya, xb, yb, 3, "red");
-        } */
+        }
     }
 
     setCenterOffset(centerOffsetXScale, centerOffsetYScale){
