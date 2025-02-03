@@ -17,11 +17,24 @@ export function tokenize(str){
         function isLeftParenthesis(ch) { return (ch === "(");}
         function isRightParenthesis(ch) { return (ch == ")");}
 
+        let div_flag = false;
+
+        function pushResult(token){
+            result.push(token);
+            //Make a buffer until a certain condition is made, like a plus or minus operator
+            if(div_flag){
+                if(token.type != "Left Paranthesis"){
+                    console.log("divided by ", token);
+                    div_flag = false;
+                }
+            }
+        }
+
         function clearLetterBuffer(beforeOp = false){
             if(list_of_variables.includes(letterBuffer)){
-                result.push(new Token("Variable", letterBuffer));
+                pushResult(new Token("Variable", letterBuffer));
                 if(!beforeOp){
-                    result.push(new Token("Operator", "*"));
+                    pushResult(new Token("Operator", "*"));
                 }
                 letterBuffer = "";
             }
@@ -29,17 +42,17 @@ export function tokenize(str){
                 let p_flag = false;
                 letterBuffer.split("").forEach((ch, idx) => { 
                     if(list_of_variables.includes(ch)){
-                        result.push(new Token("Variable", ch));
+                        pushResult(new Token("Variable", ch));
                     }
                     else if(isLetter(ch)){
                         if(p_flag){
                             if(ch == 'i'){
-                                result.push(new Token("Literal", Math.PI))
+                                pushResult(new Token("Literal", Math.PI))
                             }
                             else{
-                                result.push(new Token("Constant", 'i'));
-                                result.push(new Token("Operator", "*"));
-                                result.push(new Token("Constant", ch));
+                                pushResult(new Token("Constant", 'i'));
+                                pushResult(new Token("Operator", "*"));
+                                pushResult(new Token("Constant", ch));
                             }
                             p_flag = false
                         }
@@ -47,15 +60,15 @@ export function tokenize(str){
                             p_flag = true
                         }
                         else if(ch == 'e'){
-                            result.push(new Token("Literal", Math.exp(1)))
+                            pushResult(new Token("Literal", Math.exp(1)))
                         }
                         else{
-                            result.push(new Token("Constant", ch));
+                            pushResult(new Token("Constant", ch));
                         }
                     }
                     if(!p_flag){
                         if(idx < letterBuffer.split("").length - 1 || !beforeOp){
-                            result.push(new Token("Operator", "*"));
+                            pushResult(new Token("Operator", "*"));
                         }
                     }
                 });
@@ -64,9 +77,9 @@ export function tokenize(str){
         }
 
         function clearNumberBuffer(beforeOp = false){
-            result.push(new Token("Literal", numberBuffer));
+            pushResult(new Token("Literal", numberBuffer));
             if(!beforeOp){
-                result.push(new Token("Operator", "*"));
+                pushResult(new Token("Operator", "*"));
             }
             numberBuffer = "";
         }
@@ -87,12 +100,12 @@ export function tokenize(str){
             else if(isOperator(char)){
                 if(char == '-'){
                     if(result.length == 0){
-                        result.push(new Token("Literal", -1));
-                        result.push(new Token("Operator", "*"));
+                        pushResult(new Token("Literal", -1));
+                        pushResult(new Token("Operator", "*"));
                     }
                     else if(!numberBuffer && !letterBuffer && result.at(-1).type != "Right Paranthesis"){
-                        result.push(new Token("Literal", -1));
-                        result.push(new Token("Operator", "*"));
+                        pushResult(new Token("Literal", -1));
+                        pushResult(new Token("Operator", "*"));
                     }  
                 }
                 else{
@@ -102,7 +115,10 @@ export function tokenize(str){
                     else if(letterBuffer){
                         clearLetterBuffer(true);
                     }
-                    result.push(new Token("Operator", char));
+                    pushResult(new Token("Operator", char));
+                    if(char == "/"){
+                        div_flag = true;
+                    }
                 }
             }
             else if(isLeftParenthesis(char)){
@@ -118,18 +134,18 @@ export function tokenize(str){
                         let p_flag = false
                         for(let i = 0; i < fn_idx; i++){
                             if(list_of_variables.includes(letterBuffer[i])){
-                                result.push(new Token("Variable", letterBuffer[i]));
-                                result.push(new Token("Operator", "*"));
+                                pushResult(new Token("Variable", letterBuffer[i]));
+                                pushResult(new Token("Operator", "*"));
                             }
                             else{
                                 if(p_flag){
                                     if(letterBuffer[i] == 'i'){
-                                        result.push(new Token("Literal", Math.PI));
+                                        pushResult(new Token("Literal", Math.PI));
                                     }
                                     else{
-                                        result.push(new Token('Constant', 'p'));
-                                        result.push(new Token("Operator", "*"));
-                                        result.push(new Token("Constant", letterBuffer[i]));
+                                        pushResult(new Token('Constant', 'p'));
+                                        pushResult(new Token("Operator", "*"));
+                                        pushResult(new Token("Constant", letterBuffer[i]));
                                     }
                                     p_flag = false;
                                 }
@@ -137,26 +153,26 @@ export function tokenize(str){
                                     p_flag = true;
                                 }
                                 else if(letterBuffer[i] == 'e'){
-                                    result.push(new Token("Literal", Math.exp(1)));
+                                    pushResult(new Token("Literal", Math.exp(1)));
                                 }
                                 else{
-                                    result.push(new Token("Constant", letterBuffer[i]));
+                                    pushResult(new Token("Constant", letterBuffer[i]));
                                 }
-                                result.push(new Token("Operator", "*"));
+                                pushResult(new Token("Operator", "*"));
                             }
                         }
-                        result.push(new Token("Function", letterBuffer.substring(fn_idx)));
+                        pushResult(new Token("Function", letterBuffer.substring(fn_idx)));
                         letterBuffer = "";
                     }
                     else{
                         clearLetterBuffer();
-                        result.push(new Token("Operator", "*"));
+                        pushResult(new Token("Operator", "*"));
                     }
                 }
                 else if(numberBuffer){
                     clearNumberBuffer();
                 }
-                result.push(new Token("Left Paranthesis", char));
+                pushResult(new Token("Left Paranthesis", char));
             }
             else if(isRightParenthesis(char)){
                 if(numberBuffer){
@@ -165,7 +181,7 @@ export function tokenize(str){
                 else if(letterBuffer){
                     clearLetterBuffer(true);
                 }
-                result.push(new Token("Right Paranthesis", char));
+                pushResult(new Token("Right Paranthesis", char));
             }
             else if(isComma(char)){
                 if(numberBuffer){
@@ -174,7 +190,7 @@ export function tokenize(str){
                 else if(letterBuffer){
                     clearLetterBuffer(true);
                 }
-                result.push(new Token("Function Argument Separator", char));
+                pushResult(new Token("Function Argument Separator", char));
             }
         });
         if(numberBuffer){
