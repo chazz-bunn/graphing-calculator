@@ -18,14 +18,44 @@ export function tokenize(str){
         function isRightParenthesis(ch) { return (ch == ")");}
 
         let div_flag = false;
-
+        let div_paran_flag = 0;
+        let divided_by = [];
+        let has_var = false;
         function pushResult(token){
             result.push(token);
             //Make a buffer until a certain condition is made, like a plus or minus operator
             if(div_flag){
-                if(token.type != "Left Paranthesis"){
-                    console.log("divided by ", token);
-                    div_flag = false;
+                if(token.type == "Variable"){
+                    has_var = true;
+                }
+                if(div_paran_flag == 0){
+                    if(token.type != "Operator"){
+                        if(token.type == "Left Paranthesis"){
+                            div_paran_flag = 1;
+                        }
+                        divided_by.push(token);
+                    }
+                    else{
+                        //if(token.value == "+" || token.value == "-"){
+                        if(has_var){
+                            console.log("Has var in: ", divided_by);
+                        }
+                        div_flag = false;
+                        has_var = false;
+                        //}
+                        /* else{
+                            divided_by.push(token);
+                        } */
+                    }
+                }
+                else{
+                    if(token.type == "Left Paranthesis"){
+                        div_paran_flag += 1;
+                    }
+                    if(token.type == "Right Paranthesis"){
+                        div_paran_flag -= 1;
+                    }
+                    divided_by.push(token);
                 }
             }
         }
@@ -84,7 +114,7 @@ export function tokenize(str){
             numberBuffer = "";
         }
 
-        str.forEach((char) => {
+        str.forEach((char, idx) => {
             if(isDigit(char) || char == "."){
                 if(letterBuffer){
                     clearLetterBuffer();
@@ -99,14 +129,23 @@ export function tokenize(str){
             }
             else if(isOperator(char)){
                 if(char == '-'){
-                    if(result.length == 0){
+                    if(idx == 0){
                         pushResult(new Token("Literal", -1));
                         pushResult(new Token("Operator", "*"));
                     }
                     else if(!numberBuffer && !letterBuffer && result.at(-1).type != "Right Paranthesis"){
                         pushResult(new Token("Literal", -1));
                         pushResult(new Token("Operator", "*"));
-                    }  
+                    }
+                    else{
+                        if(numberBuffer){
+                            clearNumberBuffer(true);
+                        }
+                        else if(letterBuffer){
+                            clearLetterBuffer(true);
+                        }
+                        pushResult(new Token("Operator", char));
+                    }
                 }
                 else{
                     if(numberBuffer){
@@ -199,5 +238,7 @@ export function tokenize(str){
         else if(letterBuffer){
             clearLetterBuffer(true);
         }
+        pushResult(new Token("Operator", "+"));
+        pushResult(new Token("Literal", 0));
         return result;
     }
