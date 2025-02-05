@@ -23,7 +23,7 @@ export function tokenize(str){
         let has_var = false;
         function pushResult(token){
             result.push(token);
-            //Make a buffer until a certain condition is made, like a plus or minus operator
+            //Fill divided_by buffer while div_flag is up
             if(div_flag){
                 if(token.type == "Variable"){
                     has_var = true;
@@ -35,17 +35,14 @@ export function tokenize(str){
                         }
                         divided_by.push(token);
                     }
-                    else{
-                        //if(token.value == "+" || token.value == "-"){
+                    else{//Where buffer ends
                         if(has_var){
-                            console.log("Has var in: ", divided_by);
+                            console.log("Divide By: ", divided_by);
+                            //Insert function solving for x 'divided_by = 0' to find vertical asymptotes
                         }
                         div_flag = false;
                         has_var = false;
-                        //}
-                        /* else{
-                            divided_by.push(token);
-                        } */
+                        divided_by = [];
                     }
                 }
                 else{

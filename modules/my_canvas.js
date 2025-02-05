@@ -114,17 +114,24 @@ export class MyCanvas{
         let rightmost = Math.ceil((this.canvas.width-this.centerX)/(this.cell_length));
         let steps = 10000;
         let step_size = (rightmost - leftmost)/steps;
-
         for(let i = 0; i <= steps; i++){
             let x_coorda = leftmost+step_size*(i-1);
             let xa = this.cell_length*x_coorda+this.centerX;
-            let ya = -this.cell_length*postfix_eval(tokens, x_coorda)+this.centerY;
+            let y_coorda = postfix_eval(tokens, x_coorda);
+            let ya = -this.cell_length*y_coorda+this.centerY;
 
             let x_coordb = leftmost+step_size*i;
             let xb = this.cell_length*x_coordb+this.centerX;
-            let yb = -this.cell_length*postfix_eval(tokens, x_coordb)+this.centerY;
+            let y_coordb = postfix_eval(tokens, x_coordb);
+            let yb = -this.cell_length*y_coordb+this.centerY;
 
-            this.drawLine(xa, ya, xb, yb, 3, "red");
+            //Future if v. asymptote code
+            if(false){
+                //Pass
+            }
+            else{
+                this.drawLine(xa, ya, xb, yb, 3, "red");
+            }
         }
     }
 
