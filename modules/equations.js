@@ -2,7 +2,6 @@ export class Equations{
     constructor(canvas_id){
         this.canvas = document.getElementById(canvas_id);
         this.ctx = this.canvas.getContext("2d");
-        let parent = document.getElementById("equation-container");
         this.ctx.canvas.width = this.canvas.parentNode.width;
         this.ctx.canvas.height = this.canvas.parentNode.height;
     }
