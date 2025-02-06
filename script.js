@@ -1,9 +1,12 @@
-import { MyCanvas } from "./modules/my_canvas.js";
+import { Grid } from "./modules/grid.js";
+import { Equations } from "./modules/equations.js";
 import { handle_input } from "./modules/handle_input.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-    const grid = new MyCanvas("myCanvas");
-    const equation_box = document.getElementById("equation");
+    const grid = new Grid("grid");
+    const equations = new Equations("equations");
+    equations.testLine();
+    //const equation_box = document.getElementById("equation");
     let tokens = [];
     // Detect if window has been resized
     window.addEventListener("resize", () => {
@@ -38,10 +41,10 @@ document.addEventListener("DOMContentLoaded", () => {
         grid.setGridZoom(event.clientX, event.clientY, event.deltaY, tokens);
     });
     
-    equation_box.addEventListener("input", () => {
+    /* equation_box.addEventListener("input", () => {
         tokens = handle_input(equation_box.value);
         grid.setVarsDrawGridDrawCurve(tokens);
-    }); 
+    });  */
 
     grid.setVarsDrawGridDrawCurve(tokens);
 });

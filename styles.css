@@ -65,7 +65,7 @@ a:hover, a:active {
             display: inline-block;
         }
 
-.container{
+.container {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
     background-color: white;
@@ -73,16 +73,20 @@ a:hover, a:active {
     /* .inputCanvas{
         grid-column: 1/2;
     } */
-    .myCanvas{
+    .grid-container {
         grid-column: 2/6;
         background-color: white;
     }
-    .equation-container{
+    .equation-container {
         grid-column: 1/2;
         display: grid;
+        position: relative;
         background-color: white;
-        grid-template-rows: 85px 2ch 1fr 1fr 1fr 1fr;
+        border-right: solid #0e141b;
         }
-        .equation{
-            grid-row: 2/3;
+        .equations {
+            background: white;
+            position: absolute;
+            height: 100%;
+            width: 100%;
         }
