@@ -15,8 +15,6 @@ export class Grid{
 
         this.centerX = 0;
         this.centerY = 0;
-
-        this.canvasData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
     }
 
     get_idx(i){return (this.scale*1 < 0.01) ? (this.scale*i).toExponential(1): Math.round(100*this.scale*i)/100;}
@@ -37,15 +35,15 @@ export class Grid{
 
     setGridVars(){
         // Get window size
-        this.ctx.canvas.width = window.innerWidth;
-        this.ctx.canvas.height = window.innerHeight;
-        
+        let rect = this.canvas.parentNode.getBoundingClientRect();
+        this.ctx.canvas.width = rect.right;
+        this.ctx.canvas.height = window.innerHeight - rect.y;
         // Determine Cell Size
         this.cell_length = (this.grid_zoom > 0) ? this.canvas.width/this.grid_zoom : this.canvas.width*Math.abs(this.grid_zoom);
 
         // The center
-        this.centerX = window.innerWidth*this.centerOffsetXScale;
-        this.centerY = window.innerHeight*this.centerOffsetYScale;
+        this.centerX = this.canvas.width*this.centerOffsetXScale;
+        this.centerY = this.canvas.height*this.centerOffsetYScale;
     }
 
     drawGrid(){        
@@ -84,31 +82,6 @@ export class Grid{
     }
 
     graphCurve(tokens){
-        /* let leftmost = Math.floor((-this.centerX)/(this.cell_length));
-        let rightmost = Math.ceil((this.canvas.width-this.centerX)/(this.cell_length));
-        let x_steps = 1000;
-        let x_step_size = (rightmost - leftmost)/x_steps;
-
-        let topmost = (this.centerY)/(this.cell_length);
-        let bottommost = (this.centerY-this.canvas.height)/(this.cell_length);
-        let y_steps = 1000;
-        let y_step_size = (bottommost - topmost)/y_steps;
-
-        for(let i = 0; i <= x_steps; i++){
-            for(let j = 0; j <= y_steps; j++){
-                let x_coord = leftmost+x_step_size*i;
-                let y_coord = topmost+y_step_size*j;
-
-                let y_pos = -this.cell_length*y_coord+this.centerY;
-                let value = -this.cell_length*postfix_eval(tokens, x_coord)+this.centerY;
-                
-                if(Math.round(y_coord) == Math.round(value)){
-                    let x_pos = this.cell_length*x_coord+this.centerX;
-                    this.ctx.fillRect(x_pos, y_pos, 1, 1);
-                }
-            }
-        } */
-
         // Graph function using splines
         let leftmost = Math.floor((-this.centerX)/(this.cell_length));
         let rightmost = Math.ceil((this.canvas.width-this.centerX)/(this.cell_length));
@@ -185,8 +158,8 @@ export class Grid{
         this.centerX -= dx;
         this.centerY -= dy;
         // Adjust offset scale variables used for shifting graph
-        this.centerOffsetXScale = this.centerX/window.innerWidth;
-        this.centerOffsetYScale = this.centerY/window.innerHeight;
+        this.centerOffsetXScale = this.centerX/this.canvas.width;
+        this.centerOffsetYScale = this.centerY/this.canvas.height;
         this.drawGrid();
         this.graphCurve(tokens);
     }

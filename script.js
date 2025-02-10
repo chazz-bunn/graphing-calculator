@@ -1,11 +1,13 @@
 import { Grid } from "./modules/grid.js";
-import { Equations } from "./modules/equations.js";
+import { InputBoxes } from "./modules/input_boxes.js";
 import { handle_input } from "./modules/handle_input.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     const grid = new Grid("grid");
-    const equations = new Equations("equations");
-    equations.testLine();
+    //const equations = new Equations("equations");
+    const equations = new InputBoxes();
+    //equations.testLine();
+    equations.makeInputBox();
     //const equation_box = document.getElementById("equation");
     let tokens = [];
     // Detect if window has been resized
