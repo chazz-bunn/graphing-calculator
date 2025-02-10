@@ -13,5 +13,6 @@ export class InputBoxes{
         this.input_boxes.push(input_box);
         this.input_boxes_idx++;
         this.input_area.appendChild(input_box.getCanvas());
+        input_box.drawCursor();
     }
 }

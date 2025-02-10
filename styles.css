@@ -82,8 +82,7 @@ a:hover, a:active {
         }
         .input-boxes-container {
             grid-column: 1/2;
-            display: grid;
-            /* position: relative; */
+            position: relative;
             /*background-color: #c8c8c8; */
             background-color: #363636;
             border-right: thick solid #2297fa;
