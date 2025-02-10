@@ -2,6 +2,8 @@ https://chazz-bunn.github.io/graphing-calculator/
 
 Feature to add: Factorials
 
+Idea: Make the canvas for a set size and stretch it out as needed, might be able to use fewer splines as well.
+
 Issue: Vertical Asymptotes get drawn when I don't want them to, need a solution to fix that.
     Categories of asymptotes:
         Rational expressions
