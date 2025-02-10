@@ -122,8 +122,8 @@ export class Grid{
         let mouse_coord_y = (this.centerY-(y_pos-rect.top))/(this.scale*this.cell_length);
         let mouse_pos_x = x_pos-rect.left;
         let mouse_pos_y = y_pos-rect.top;
-
-        this.grid_zoom += zoom/100;
+   
+        this.grid_zoom += Math.ceil(zoom/100);
 
         // Rescale graph based on zoom levels
         if(this.canvas.width/(this.cell_length*this.scale) >= 20 && zoom > 0){

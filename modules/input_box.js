@@ -1,6 +1,7 @@
 export class InputBox{
     constructor(idx, width, height, box_active = false){
         this.input_canvas = document.createElement('canvas');
+        this.input_canvas.tabIndex = 0;
         this.input_canvas.id = "input-canvas-" + idx.toString();
         this.input_canvas.className = "input-canvas";
         this.ctx = this.input_canvas.getContext('2d');
@@ -10,36 +11,43 @@ export class InputBox{
         this.box_active = box_active;
         this.cursorBlickInterval = 500;
         this.isCursorVisible = true;
-        //On Click
-        window.addEventListener("click", ()=>{
-            this.box_active = false;
-            this.input_canvas.addEventListener("click", ()=> {
-                this.box_active = true;
-                console.log("clicked");
-            });
-        });
-        window.addEventListener('keydown', function(event){
-            console.log(event);
-            //event
-        });
+        this.is_focused = false;
 
-       setInterval(this.toggleCursorVisibility, this.cursorBlickInterval);
+        this.input_canvas.addEventListener('keydown', function(event){
+            console.log(event);
+        });
+        this.input_canvas.addEventListener("focusin", ()=>{
+            this.input_canvas.style.backgroundColor = "white";
+            this.is_focused = true;
+        });
+        this.input_canvas.addEventListener("focusout", ()=>{
+            this.input_canvas.style.backgroundColor = "#c8c8c8";
+            this.is_focused = false;
+        });
+       setInterval(this.toggleCursorVisibility.bind(this), this.cursorBlickInterval);
     }
 
     toggleCursorVisibility(){
         this.isCursorVisible = !this.isCursorVisible;
-        //this.drawCursor();
+        this.drawCursor();
     }
 
     drawCursor(){
         //Note: fillText text is anchored at bottom left corner
         //To make appear in middle: height/2 + text_height/2 - (maybe 3 because of bordered bottom *shrug*)
-        this.ctx.fillStyle = "black";
         this.ctx.font = this.font_size.toString() + "px Arial";
-        this.ctx.fillText("|A|AAAAAAAAAA", 4, this.ctx.canvas.height/2 + this.font_size/2 - 3);
-        /* if(this.isCursorVisible){
-            this.input_canvas.fillText("|", 5, 0);
-        } */
+        if(this.isCursorVisible && this.is_focused){
+            this.ctx.fillStyle = "black";
+            this.ctx.fillText("|", 4, this.ctx.canvas.height/2 + this.font_size/2 - 3);
+        }
+        else if(this.is_focused){
+            this.ctx.fillStyle = "white";
+            this.ctx.fillText("|", 4, this.ctx.canvas.height/2 + this.font_size/2 - 3);
+        }
+        else{
+            this.ctx.fillStyle = "#c8c8c8";
+            this.ctx.fillText("|", 4, this.ctx.canvas.height/2 + this.font_size/2 - 3);
+        }
     }
 
     getCanvas() {return this.input_canvas;}
