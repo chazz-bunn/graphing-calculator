@@ -21,15 +21,19 @@ export class InputBox{
             this.is_focused = true;
         });
         this.input_canvas.addEventListener("focusout", ()=>{
-            this.input_canvas.style.backgroundColor = "#c8c8c8";
+            this.input_canvas.style.backgroundColor = "#c9c9c9";
             this.is_focused = false;
+            this.drawCursor();
         });
        setInterval(this.toggleCursorVisibility.bind(this), this.cursorBlickInterval);
     }
 
     toggleCursorVisibility(){
         this.isCursorVisible = !this.isCursorVisible;
-        this.drawCursor();
+        if(this.is_focused){
+            this.drawCursor();
+        }
+        
     }
 
     drawCursor(){
