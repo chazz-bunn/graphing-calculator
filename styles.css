@@ -94,3 +94,7 @@ a:hover, a:active {
                 border-left: thick solid #2297fa;
                 cursor:text
             }
+            .input-canvas:focus, input:focus{
+                outline: none;
+                background-color: white;
+            }

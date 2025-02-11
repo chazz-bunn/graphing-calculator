@@ -12,16 +12,18 @@ export class InputBox{
         this.cursorBlickInterval = 500;
         this.isCursorVisible = true;
         this.is_focused = false;
+        this.input_str = "";
 
-        this.input_canvas.addEventListener('keydown', function(event){
-            console.log(event);
+        this.input_canvas.addEventListener('keydown', (event)=>{
+            if(event.key.length == 1){
+                console.log(event);
+            }
+            
         });
         this.input_canvas.addEventListener("focusin", ()=>{
-            this.input_canvas.style.backgroundColor = "white";
             this.is_focused = true;
         });
         this.input_canvas.addEventListener("focusout", ()=>{
-            this.input_canvas.style.backgroundColor = "#c8c8c8";
             this.is_focused = false;
         });
        setInterval(this.toggleCursorVisibility.bind(this), this.cursorBlickInterval);
