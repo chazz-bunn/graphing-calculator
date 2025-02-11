@@ -25,13 +25,17 @@ export class InputBox{
         });
         this.input_canvas.addEventListener("focusout", ()=>{
             this.is_focused = false;
+            this.drawCursor();
         });
        setInterval(this.toggleCursorVisibility.bind(this), this.cursorBlickInterval);
     }
 
     toggleCursorVisibility(){
         this.isCursorVisible = !this.isCursorVisible;
-        this.drawCursor();
+        if(this.is_focused){
+            this.drawCursor();
+        }
+        
     }
 
     drawCursor(){
