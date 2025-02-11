@@ -16,9 +16,10 @@ export class InputBox{
 
         this.input_canvas.addEventListener('keydown', (event)=>{
             if(event.key.length == 1){
-                console.log(event);
+                //console.log(event);
+                this.input_str += event.key;
+                this.drawCursor();
             }
-            
         });
         this.input_canvas.addEventListener("focusin", ()=>{
             this.is_focused = true;
@@ -41,18 +42,14 @@ export class InputBox{
     drawCursor(){
         //Note: fillText text is anchored at bottom left corner
         //To make appear in middle: height/2 + text_height/2 - (maybe 3 because of bordered bottom *shrug*)
+        this.ctx.clearRect(0, 0, this.input_canvas.width, this.input_canvas.height);
         this.ctx.font = this.font_size.toString() + "px Arial";
+        this.ctx.fillStyle = "black";
         if(this.isCursorVisible && this.is_focused){
-            this.ctx.fillStyle = "black";
-            this.ctx.fillText("|", 4, this.ctx.canvas.height/2 + this.font_size/2 - 3);
-        }
-        else if(this.is_focused){
-            this.ctx.fillStyle = "white";
-            this.ctx.fillText("|", 4, this.ctx.canvas.height/2 + this.font_size/2 - 3);
+            this.ctx.fillText(this.input_str + "|", 4, this.ctx.canvas.height/2 + this.font_size/2 - 3);
         }
         else{
-            this.ctx.fillStyle = "#c8c8c8";
-            this.ctx.fillText("|", 4, this.ctx.canvas.height/2 + this.font_size/2 - 3);
+            this.ctx.fillText(this.input_str, 4, this.ctx.canvas.height/2 + this.font_size/2 - 3);
         }
     }
 
