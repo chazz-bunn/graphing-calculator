@@ -8,6 +8,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const equations = new InputBoxes();
     //equations.testLine();
     equations.makeInputBox();
+    equations.makeInputBox();
+    equations.makeInputBox();
     //const equation_box = document.getElementById("equation");
     let tokens = [];
     // Detect if window has been resized

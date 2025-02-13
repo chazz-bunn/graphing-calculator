@@ -12,7 +12,7 @@ export class InputBox{
         this.ctx.canvas.width = width;
 
         this.font_size = 22;
-        this.ctx.font = this.font_size.toString() + "px Arial";
+        this.ctx.font = this.font_size.toString() + "px Computer Modern Sans Serif";
         this.ctx.fillStyle = "black";
 
         this.cursor_index = 0;
@@ -26,24 +26,37 @@ export class InputBox{
         this.input_str = "";
 
         this.input_canvas.addEventListener('keydown', (event)=>{
+            console.log(event.key);
             if(event.key.length == 1){
                 this.input_str += event.key;
                 this.cursor_index++;
                 this.isCursorVisible = true;
                 this.drawCursor();
             }
-            else if(event.key == "ArrowLeft"){
-                if(this.cursor_index > 0){
-                    this.cursor_index--;
-                    this.isCursorVisible = true;
-                    this.drawCursor();
-                }
-            }
-            else if(event.key == "ArrowRight"){
-                if(this.cursor_index < this.input_str.length){
-                    this.cursor_index++;
-                    this.isCursorVisible = true;
-                    this.drawCursor();
+            else{
+                switch(event.key) {
+                    case "ArrowLeft":
+                        if(this.cursor_index > 0){
+                            this.cursor_index--;
+                            this.isCursorVisible = true;
+                            this.drawCursor();
+                        }
+                        break;
+                    case "ArrowRight":
+                        if(this.cursor_index < this.input_str.length){
+                            this.cursor_index++;
+                            this.isCursorVisible = true;
+                            this.drawCursor();
+                        }
+                        break;
+                    case "Backspace":
+                        if(this.cursor_index > 0){
+                            this.input_str = this.input_str.substring(0, this.cursor_index-1) + this.input_str.substring(this.cursor_index, this.input_str.length);
+                            this.cursor_index--;
+                            this.isCursorVisible = true;
+                            this.drawCursor();
+                        }
+                        break;
                 }
             }
         });
