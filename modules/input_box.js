@@ -25,13 +25,19 @@ export class InputBox{
 
         this.input_str = "";
 
+        //Idea is to have tags to do things like fractions, subscripts, and superscripts
+
         this.input_canvas.addEventListener('keydown', (event)=>{
-            console.log(event.key);
             if(event.key.length == 1){
-                this.input_str += event.key;
-                this.cursor_index++;
-                this.isCursorVisible = true;
-                this.drawCursor();
+                if(event.key == "/"){
+                    console.log("divide");
+                }
+                else{
+                    this.input_str += event.key;
+                    this.cursor_index++;
+                    this.isCursorVisible = true;
+                    this.drawCursor();
+                }
             }
             else{
                 switch(event.key) {
