@@ -12,18 +12,21 @@ export class InputBox{
         this.ctx.canvas.width = width;
 
         this.font_size = 22;
-        this.ctx.font = this.font_size.toString() + "px Computer Modern Sans Serif";
+        this.ctx.font = this.font_size.toString() + "px normal Computer Modern";
         this.ctx.fillStyle = "black";
 
-        this.cursor_index = 0;
+        //Note: fillText (the method used to print text in canvas) text is anchored at bottom left corner
+        //To make appear in middle: height/2 + text_height/2 - (maybe 3 because of bordered bottom *shrug*)
+        this.input_str = "<body></body>";
+        this.cursor_index = 6;
         this.text_offset = 4;
         this.cursorBlickInterval = 500;
+        this.cursor_default_height = this.ctx.canvas.height/2 + this.font_size/2 - 3;
         this.cursor_cutoff = (this.input_canvas.height-this.font_size)/2;
 
         this.isCursorVisible = true;
         this.is_focused = false;
 
-        this.input_str = "";
 
         //Idea is to have tags to do things like fractions, subscripts, and superscripts
 
@@ -33,7 +36,8 @@ export class InputBox{
                     console.log("divide");
                 }
                 else{
-                    this.input_str += event.key;
+                    //this.input_str += event.key;
+                    this.input_str = this.input_str.substring(0, this.cursor_index) + event.key + this.input_str.substring(this.cursor_index, this.input_str.length);
                     this.cursor_index++;
                     this.isCursorVisible = true;
                     this.drawCursor();
@@ -42,21 +46,21 @@ export class InputBox{
             else{
                 switch(event.key) {
                     case "ArrowLeft":
-                        if(this.cursor_index > 0){
+                        if(this.cursor_index > 6){
                             this.cursor_index--;
                             this.isCursorVisible = true;
                             this.drawCursor();
                         }
                         break;
                     case "ArrowRight":
-                        if(this.cursor_index < this.input_str.length){
+                        if(this.cursor_index < this.input_str.length-7){
                             this.cursor_index++;
                             this.isCursorVisible = true;
                             this.drawCursor();
                         }
                         break;
                     case "Backspace":
-                        if(this.cursor_index > 0){
+                        if(this.cursor_index > 6){
                             this.input_str = this.input_str.substring(0, this.cursor_index-1) + this.input_str.substring(this.cursor_index, this.input_str.length);
                             this.cursor_index--;
                             this.isCursorVisible = true;
@@ -93,9 +97,6 @@ export class InputBox{
     }
 
     drawCursor(){
-        //Note: fillText text is anchored at bottom left corner
-        //To make appear in middle: height/2 + text_height/2 - (maybe 3 because of bordered bottom *shrug*)
-
         this.ctx.clearRect(0, 0, this.input_canvas.width, this.input_canvas.height);
         
         this.ctx.fillText(this.input_str, this.text_offset, this.ctx.canvas.height/2 + this.font_size/2 - 3);

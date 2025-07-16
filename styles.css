@@ -1,6 +1,25 @@
-@font-face{
-    font-family: 'Computer Modern Sans Serif';
-    src: url("fonts/computer-modern/cmunss.ttf") format('truetype');
+@font-face {
+    font-family: "Computer Modern";
+    src: url('fonts/computer-modern/cmunss.otf');
+}
+
+@font-face {
+    font-family: "Computer Modern";
+    src: url('fonts/computer-modern/cmunsx.otf');
+    font-weight: bold;
+}
+
+@font-face {
+    font-family: "Computer Modern";
+    src: url('fonts/computer-modern/cmunsi.otf');
+    font-style: italic, oblique;
+}
+
+@font-face {
+    font-family: "Computer Modern";
+    src: url('fonts/computer-modern/cmunbxo.otf');
+    font-weight: bold;
+    font-style: italic, oblique;
 }
 
 html, body {
