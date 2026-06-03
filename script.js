@@ -1,15 +1,18 @@
 import { Grid } from "./modules/grid.js";
 import { InputBoxes } from "./modules/input_boxes.js";
+import { InputBox } from "./modules/input_box.js";
 import { handle_input } from "./modules/handle_input.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     const grid = new Grid("grid");
     //const equations = new Equations("equations");
-    const equations = new InputBoxes();
+    //const equations = new InputBoxes();
     //equations.testLine();
-    equations.makeInputBox();
-    equations.makeInputBox();
-    equations.makeInputBox();
+    //equations.makeInputBox();
+    var input_area = document.getElementById("input-boxes-container");
+    var input_box_width = input_area.getBoundingClientRect().width;
+    const equation = new InputBox(0, input_box_width, 50);
+    input_area.appendChild(equation.getCanvas())
     //const equation_box = document.getElementById("equation");
     let tokens = [];
     // Detect if window has been resized
@@ -45,6 +48,12 @@ document.addEventListener("DOMContentLoaded", () => {
         grid.setGridZoom(event.clientX, event.clientY, event.deltaY, tokens);
     });
     
+    equation.addEventListener("change", e => {
+        console.log("String:", e.detail.tokens);
+        tokens = e.detail.tokens
+        grid.setVarsDrawGridDrawCurve(tokens)
+    });
+
     /* equation_box.addEventListener("input", () => {
         tokens = handle_input(equation_box.value);
         grid.setVarsDrawGridDrawCurve(tokens);

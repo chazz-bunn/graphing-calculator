@@ -1,5 +1,8 @@
-export class InputBox{
+import { handle_input } from "./handle_input.js";
+
+export class InputBox extends EventTarget{
     constructor(idx, width, height){
+        super();
         this.input_canvas = document.createElement('canvas');
         this.input_canvas.tabIndex = 0;
         this.input_canvas.id = "input-canvas-" + idx.toString();
@@ -17,8 +20,8 @@ export class InputBox{
 
         //Note: fillText (the method used to print text in canvas) text is anchored at bottom left corner
         //To make appear in middle: height/2 + text_height/2 - (maybe 3 because of bordered bottom *shrug*)
-        this.input_str = "<body></body>";
-        this.cursor_index = 6;
+        this.input_str = "";
+        this.cursor_index = 0;
         this.text_offset = 4;
         this.cursorBlickInterval = 500;
         this.cursor_default_height = this.ctx.canvas.height/2 + this.font_size/2 - 3;
@@ -32,35 +35,34 @@ export class InputBox{
 
         this.input_canvas.addEventListener('keydown', (event)=>{
             if(event.key.length == 1){
-                if(event.key == "/"){
-                    console.log("divide");
-                }
-                else{
-                    //this.input_str += event.key;
-                    this.input_str = this.input_str.substring(0, this.cursor_index) + event.key + this.input_str.substring(this.cursor_index, this.input_str.length);
-                    this.cursor_index++;
-                    this.isCursorVisible = true;
-                    this.drawCursor();
-                }
+                console.log("input event length 1: ", event.key)
+                //this.input_str += event.key;
+                this.input_str = this.input_str.substring(0, this.cursor_index) + event.key + this.input_str.substring(this.cursor_index, this.input_str.length);
+                this.cursor_index++;
+                this.isCursorVisible = true;
+                this.drawCursor();
             }
             else{
+                console.log("input event length NOT 1: ", event.key)
                 switch(event.key) {
                     case "ArrowLeft":
-                        if(this.cursor_index > 6){
+                        if(this.cursor_index > 0){
                             this.cursor_index--;
                             this.isCursorVisible = true;
                             this.drawCursor();
                         }
                         break;
                     case "ArrowRight":
-                        if(this.cursor_index < this.input_str.length-7){
+                        if(this.cursor_index < this.input_str.length-1){
                             this.cursor_index++;
                             this.isCursorVisible = true;
                             this.drawCursor();
                         }
                         break;
                     case "Backspace":
-                        if(this.cursor_index > 6){
+                        console.log("backspaceded")
+                        console.log("cursor index: ", this.cursor_index)
+                        if(this.cursor_index > 0){
                             this.input_str = this.input_str.substring(0, this.cursor_index-1) + this.input_str.substring(this.cursor_index, this.input_str.length);
                             this.cursor_index--;
                             this.isCursorVisible = true;
@@ -69,6 +71,7 @@ export class InputBox{
                         break;
                 }
             }
+            this.emit_tokens(handle_input(this.input_str))
         });
         this.input_canvas.addEventListener("focusin", ()=>{
             this.is_focused = true;
@@ -78,6 +81,14 @@ export class InputBox{
             this.drawCursor();
         });
        setInterval(this.toggleCursorVisibility.bind(this), this.cursorBlickInterval);
+    }
+
+    emit_tokens(tokes){
+        this.dispatchEvent(
+            new CustomEvent("change", {
+                detail: { tokens: tokes }
+            })
+        );
     }
 
     toggleCursorVisibility(){
