@@ -30,7 +30,6 @@ export class InputBox extends EventTarget{
         this.isCursorVisible = true;
         this.is_focused = false;
 
-
         //Idea is to have tags to do things like fractions, subscripts, and superscripts
 
         this.input_canvas.addEventListener('keydown', (event)=>{
@@ -53,10 +52,13 @@ export class InputBox extends EventTarget{
                         }
                         break;
                     case "ArrowRight":
-                        if(this.cursor_index < this.input_str.length-1){
+                        if(this.cursor_index < this.input_str.length){
                             this.cursor_index++;
                             this.isCursorVisible = true;
                             this.drawCursor();
+                        }
+                        else{
+                            console.log("else")
                         }
                         break;
                     case "Backspace":
@@ -71,6 +73,8 @@ export class InputBox extends EventTarget{
                         break;
                 }
             }
+            console.log("cursor pos: ", this.cursor_index)
+            console.log("string length: ", this.input_str.length)
             this.emit_tokens(handle_input(this.input_str))
         });
         this.input_canvas.addEventListener("focusin", ()=>{
